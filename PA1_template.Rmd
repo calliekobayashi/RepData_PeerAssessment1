@@ -29,7 +29,14 @@ activity$date <- as.Date(activity$date, format="%Y-%m-%d")
 total_step<-group_by(activity,date) %>% summarize(steps=sum(steps,na.rm=TRUE))
 ```
 
-2. Calculate mean and median of total steps per day
+2. Histogram plot
+```{r}
+g_total<- ggplot(data=total_step,aes(x=steps)) 
+g1 <- g_total + theme_bw() +ylim(0,6)
+g1+ geom_histogram(fill="blue", binwidth=500) + labs(title="Total Steps Taken Each Day",x="Total Steps/ Date")
+```
+
+3. Calculate mean and median of total steps per day
 ```{r}
 mean(total_step$steps)
 median(total_step$steps)
@@ -42,7 +49,14 @@ median(total_step$steps)
 mean_interval <- group_by(activity,interval) %>% summarize(steps=mean(steps,na.rm=TRUE))
 ```
 
-2.Calculate max interval step
+2. Activity pattern plot
+```{r}
+g_mean<- ggplot(data=mean_interval,aes(x=interval,y=steps)) 
+g2 <- g_mean + geom_line(col="blue") + theme_bw() 
+g2+labs(title="Average Steps Taken at 5 min Interval",x="5 minute Interval", y="Average Steps")
+```
+
+3. Calculate max interval step
 ```{r}
 mean_interval$interval[which.max(mean_interval$steps)]
 ```
@@ -67,6 +81,12 @@ for (i in mean_interval) {
 update_step<-group_by(update,date) %>% summarize(steps=sum(steps))
 ```
 
+4. Updated histogram plot
+```{r}
+g_update<- ggplot(data=update_step,aes(x=steps)) 
+g3 <- g_update + theme_bw() 
+g3+ geom_histogram(fill="blue", binwidth=500) + labs(title="Updated Total Steps Taken Each Day",x="Total Steps/ Date")
+```
 
 ## Are there differences in activity patterns between weekdays and weekends?
 1. Create column with weekday vs weekend
@@ -80,4 +100,11 @@ activity[!(activity$day == "Saturday" | activity$day == "Sunday"), ]$weekdays <-
 2. Average steps by interval
 ```{r}
 mean_interval <- group_by(activity,weekdays,interval) %>% summarize(steps=mean(steps,na.rm=TRUE))
+```
+
+3. Activity pattern plot by weekday vs weekend
+```{r}
+g_mean<- ggplot(data=mean_interval,aes(x=interval,y=steps)) 
+g2 <- g_mean + geom_line(col="blue") + theme_bw() + facet_grid(weekdays~.) 
+g2+labs(title="Average Steps Taken at 5 min Interval",x="5 minute Interval", y="Average Steps")
 ```
