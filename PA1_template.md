@@ -53,7 +53,22 @@ activity$date <- as.Date(activity$date, format="%Y-%m-%d")
 total_step<-group_by(activity,date) %>% summarize(steps=sum(steps,na.rm=TRUE))
 ```
 
-2. Calculate mean and median of total steps per day
+2. Histogram plot
+
+``` r
+g_total<- ggplot(data=total_step,aes(x=steps)) 
+g1 <- g_total + theme_bw() +ylim(0,6)
+g1+ geom_histogram(fill="blue", binwidth=500) + labs(title="Total Steps Taken Each Day",x="Total Steps/ Date")
+```
+
+```
+## Warning: Removed 1 row containing missing values or values outside the scale range
+## (`geom_bar()`).
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
+
+3. Calculate mean and median of total steps per day
 
 ``` r
 mean(total_step$steps)
@@ -79,7 +94,17 @@ median(total_step$steps)
 mean_interval <- group_by(activity,interval) %>% summarize(steps=mean(steps,na.rm=TRUE))
 ```
 
-2.Calculate max interval step
+2. Activity pattern plot
+
+``` r
+g_mean<- ggplot(data=mean_interval,aes(x=interval,y=steps)) 
+g2 <- g_mean + geom_line(col="blue") + theme_bw() 
+g2+labs(title="Average Steps Taken at 5 min Interval",x="5 minute Interval", y="Average Steps")
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
+
+3. Calculate max interval step
 
 ``` r
 mean_interval$interval[which.max(mean_interval$steps)]
@@ -116,6 +141,15 @@ for (i in mean_interval) {
 update_step<-group_by(update,date) %>% summarize(steps=sum(steps))
 ```
 
+4. Updated histogram plot
+
+``` r
+g_update<- ggplot(data=update_step,aes(x=steps)) 
+g3 <- g_update + theme_bw() 
+g3+ geom_histogram(fill="blue", binwidth=500) + labs(title="Updated Total Steps Taken Each Day",x="Total Steps/ Date")
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-13-1.png)<!-- -->
 
 ## Are there differences in activity patterns between weekdays and weekends?
 1. Create column with weekday vs weekend
@@ -137,3 +171,13 @@ mean_interval <- group_by(activity,weekdays,interval) %>% summarize(steps=mean(s
 ## `summarise()` has grouped output by 'weekdays'. You can override using the
 ## `.groups` argument.
 ```
+
+3. Activity pattern plot by weekday vs weekend
+
+``` r
+g_mean<- ggplot(data=mean_interval,aes(x=interval,y=steps)) 
+g2 <- g_mean + geom_line(col="blue") + theme_bw() + facet_grid(weekdays~.) 
+g2+labs(title="Average Steps Taken at 5 min Interval",x="5 minute Interval", y="Average Steps")
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-16-1.png)<!-- -->
