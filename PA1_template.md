@@ -1,0 +1,139 @@
+---
+title: "Reproducible Research: Peer Assessment 1"
+output: 
+  html_document:
+    keep_md: true
+---
+
+
+## Loading and preprocessing the data
+
+``` r
+library(dplyr)
+```
+
+```
+## 
+## Attaching package: 'dplyr'
+```
+
+```
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+```
+
+``` r
+library(ggplot2)
+```
+
+1. Load data
+
+``` r
+activity<-read.csv("activity.csv")
+```
+
+2.Change Date from factor to Date
+
+``` r
+activity$date <- as.Date(activity$date, format="%Y-%m-%d")
+```
+
+
+## What is mean total number of steps taken per day?
+1. Obtain total number of steps per day
+
+``` r
+total_step<-group_by(activity,date) %>% summarize(steps=sum(steps,na.rm=TRUE))
+```
+
+2. Calculate mean and median of total steps per day
+
+``` r
+mean(total_step$steps)
+```
+
+```
+## [1] 9354.23
+```
+
+``` r
+median(total_step$steps)
+```
+
+```
+## [1] 10395
+```
+
+
+## What is the average daily activity pattern?
+1. Obtain average steps by interval
+
+``` r
+mean_interval <- group_by(activity,interval) %>% summarize(steps=mean(steps,na.rm=TRUE))
+```
+
+2.Calculate max interval step
+
+``` r
+mean_interval$interval[which.max(mean_interval$steps)]
+```
+
+```
+## [1] 835
+```
+
+
+## Imputing missing values
+1. Calculate number of NA value
+
+``` r
+sum(is.na(activity))
+```
+
+```
+## [1] 2304
+```
+
+2. Replace NA value with mean interval value
+
+``` r
+update<-activity
+for (i in mean_interval) {
+    update[update$interval == i & is.na(update$steps),]$steps <- mean_interval$steps[mean_interval$interval==i]
+}
+```
+
+3. Updated total number of steps per day
+
+``` r
+update_step<-group_by(update,date) %>% summarize(steps=sum(steps))
+```
+
+
+## Are there differences in activity patterns between weekdays and weekends?
+1. Create column with weekday vs weekend
+
+``` r
+activity$days <- factor(weekdays(activity$date))
+activity$weekdays<-""
+activity[activity$day == "Saturday" | activity$day == "Sunday", ]$weekdays <- "weekend" 
+activity[!(activity$day == "Saturday" | activity$day == "Sunday"), ]$weekdays <- "weekday" 
+```
+
+2. Average steps by interval
+
+``` r
+mean_interval <- group_by(activity,weekdays,interval) %>% summarize(steps=mean(steps,na.rm=TRUE))
+```
+
+```
+## `summarise()` has grouped output by 'weekdays'. You can override using the
+## `.groups` argument.
+```
