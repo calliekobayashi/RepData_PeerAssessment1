@@ -71,7 +71,7 @@ update_step<-group_by(update,date) %>% summarize(steps=sum(steps))
 ## Are there differences in activity patterns between weekdays and weekends?
 1. Create column with weekday vs weekend
 ```{r}
-activity$weekdays <- factor(weekdays(activity$date))
+activity$days <- factor(weekdays(activity$date))
 activity$weekdays<-""
 activity[activity$day == "Saturday" | activity$day == "Sunday", ]$weekdays <- "weekend" 
 activity[!(activity$day == "Saturday" | activity$day == "Sunday"), ]$weekdays <- "weekday" 
